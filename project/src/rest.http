@@ -1,0 +1,14 @@
+
+ GET http://localhost:3000/investment
+
+###
+
+POST http://localhost:3000/investment HTTP/1.1
+Content-Type: "application/json"
+
+{
+    "id": "039458234098",
+    "price": 0.333,
+    "crypto": "BRL",
+    "amount": 30, 
+}

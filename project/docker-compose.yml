@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  qesh_mysql:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: qesh
+      MYSQL_DATABASE: qesh
+    ports:
+      - 3306:3306
+    volumes:
+      - './init.sql:/docker-entrypoint-initdb.d/init.sql'
+    cap_add:
+      - SYS_NICE
+  redis:
+    image: 'redis:6.2-alpine'
+    restart: always
+    ports:
+      - '6379:6379'
+    command: >-
+      redis-server --save 20 1 --loglevel warning --requirepass 86a1b907d54bf7010394bf316e183e67
+    volumes:
+      - '.cache:/usr/app/.cache'
+  app:
+    container_name: qesh
+    build: .
+    command: npm run dev
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/usr/app
+    environment:
+      NODE_ENV: dev
+      DB_HOST: qesh_mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_NAME: qesh
+      DB_PASSWORD: qesh
+      REDIS_PORT: 3679
+      REDIS_HOST: redis
+      REDIS_PASSWORD: 86a1b907d54bf7010394bf316e183e67 
+    depends_on:
+      - qesh_mysql
+      - redis
